@@ -11,7 +11,6 @@ class Menu:
                         'Edit City',
                         'Remove City']
 
-
     def display(self):
         print "Please select one of the following: "
         for i in range(len(self.options)):
@@ -44,15 +43,19 @@ class Menu:
             if option == 0:
                 # TODO clean up, delete necessary files, city.cancel() or somethin
                 pass
+
             elif option == 1:
                 # TODO let users grab file from directory
                 fc = input("Input the name of the feature class: ")
                 city.add_feature_class(fc)
+
             elif option == 2:
                 break
+
             else:
                 print("Invalid option")
                 continue
+
 
     def view_city(self):
         pass
