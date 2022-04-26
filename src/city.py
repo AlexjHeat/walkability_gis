@@ -2,6 +2,7 @@ import os
 import arcpy
 from feature import Feature
 
+
 class City:
     def __init__(self, name):
         self.name = str(name)

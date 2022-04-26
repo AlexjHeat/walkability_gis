@@ -1,6 +1,7 @@
 import arcpy
 from city import City
 
+
 class Menu:
     # TODO change options from list to dict
     def __init__(self):
@@ -29,16 +30,25 @@ class Menu:
 
     def add_city(self):
         print("\n// ADDING NEW CITY //")
-        name = raw_input("City name: ")
-        city = City(name)
+        name_valid = False
+        while name_valid is False:
+            try:
+                name = raw_input("City name: ")
+                city = City(name)
+            except WindowsError:
+                print "Name already taken, please choose another."
+                continue
+            name_valid = True
 
+
+        # TODO name must not be in use already
         # Waits for user to input a valid spatial reference
         # LA = GCS_WGS_1984
         sr_valid = False
         while sr_valid is False:
-            sr = raw_input("Enter in the spatial reference: ")
+            # TODO sr = raw_input("Enter in the spatial reference: ")
+            sr = ("Sinusoidal (world)")
             sr_valid = city.set_sr(sr)
-
 
         while True:
             print "\n// ADDING NEW CITY:", city.name, "//"
@@ -52,7 +62,7 @@ class Menu:
                 # TODO clean up, delete necessary files, city.cancel() or somethin
                 pass
             elif option == 1:
-                # TODO let users grab file from directory
+                # TODO feature classes should be accessed through the workspace, check to make sure they're there
                 fc = raw_input("Input the name of the feature class: ")
                 city.add_feature_class(fc)
 
