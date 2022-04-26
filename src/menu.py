@@ -29,8 +29,16 @@ class Menu:
 
     def add_city(self):
         print("\n// ADDING NEW CITY //")
-        name = input("City name: ")
+        name = raw_input("City name: ")
         city = City(name)
+
+        # Waits for user to input a valid spatial reference
+        # LA = GCS_WGS_1984
+        sr_valid = False
+        while sr_valid is False:
+            sr = raw_input("Enter in the spatial reference: ")
+            sr_valid = city.set_sr(sr)
+
 
         while True:
             print "\n// ADDING NEW CITY:", city.name, "//"
@@ -43,10 +51,9 @@ class Menu:
             if option == 0:
                 # TODO clean up, delete necessary files, city.cancel() or somethin
                 pass
-
             elif option == 1:
                 # TODO let users grab file from directory
-                fc = input("Input the name of the feature class: ")
+                fc = raw_input("Input the name of the feature class: ")
                 city.add_feature_class(fc)
 
             elif option == 2:
