@@ -3,7 +3,7 @@ import arcpy.management
 from arcpy.sa import *
 
 
-class FeatureClass:
+class Feature:
     def __init__(self, name):
         self.name = name
         self.fileName = name + ".shp"
