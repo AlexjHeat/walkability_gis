@@ -1,5 +1,6 @@
 import os
 import arcpy
+from arcpy.sa import *
 from feature import Feature
 
 
@@ -8,13 +9,13 @@ class City:
         self.name = str(name)
         self.fcs = []
         self.spatial_reference = None
+        self.final_raster = ""
 
-        path = os.path.join(os.getcwd(), 'src', 'cities', self.name)
-        os.mkdir(path, 0o666)
-        self.workspace = path
-        arcpy.env.workspace = self.workspace
+        path = os.path.join(os.getcwd(), 'src', 'workspace')
+        arcpy.env.workspace = path
 
-    def set_sr(self, sr):
+
+    def set_spatial_reference(self, sr):
         try:
             arcpy.SpatialReference(sr)
         except RuntimeError:
@@ -25,13 +26,26 @@ class City:
 
     def add_feature_class(self, name):
         fc = Feature(name)
-
-        # TODO decide whether to implement getting and validating the distance and score data here or as feautre_class member functions
         fc.preprocess()
-        # fc.get_distances()
-        # fc.get_scores()
+        fc.get_distances()
+        fc.get_scores()
         fc.create_concentric_buffers()
         fc.buffers_to_raster()
-        fc.add_rasters('output.tif')
-        # TODO need dynamic output name
+        self.fcs.append(fc.add_rasters())
 
+    def combine_feature_classes(self):
+        file_out = self.name + '.tif'
+        arcpy.CheckOutExtension("spatial")
+        output = CellStatistics(self.fcs, 'SUM', 'DATA')
+        output.save(file_out)
+        arcpy.CheckInExtension("spatial")
+        self.final_raster = file_out
+        return file_out
+
+    def save(self):
+        path = os.path.join(os.getcwd(), 'src', 'cities', self.name)
+        os.mkdir(path)
+        arcpy.Copy_management(self.final_raster, os.path.join(path, 'score.tif'))
+        for fc in self.fcs:
+            arcpy.Copy_management(fc, os.path.join(path, fc))
+        # TODO clean /workspace

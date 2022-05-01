@@ -1,37 +1,40 @@
 import arcpy
 import arcpy.management
 from arcpy.sa import *
+from .config import units, cell_size
 
 
 class Feature:
     def __init__(self, name):
         self.name = name
         self.fileName = name + ".shp"
-        self.distances = ['0.25 mile', '0.5 mile', '1 mile', '2 mile']
-        self.score = [1, 1, 1, 1]
+        self.distances = []
+        self.score = []
         self.buffer_list = []
         self.raster_list = []
 
 
     def get_distances(self):
-        # TODO move units to config
-        units = ['mile', 'kilometer', 'feet', 'meter']
         while True:
             unit = raw_input('Please enter a unit: ')
             if unit in units:
                 break
             print unit, 'is not a valid unit'
 
-        while True:
-            distances = raw_input("Please enter the distances in the form '0.25, 0.5, 1, 20'")
-            # TODO split, trim, check they're all numbers
+        values = raw_input("Please enter the distances in the form '0.25, 0.5, 1, 20'").split(',')
+        for i in range(len(values)):
+            values[i] = values[i].strip()
+            # TODO verify they're all numbers
+            values[i] = values[i] + ' ' + unit
+            self.distances.append(values[i])
 
-
-        # TODO implement + validator
 
     def get_scores(self):
-        pass
-        # TODO implement + validator
+        values = raw_input("Please enter the scores in the form '0.25, 0.5, 1, 20'").split(',')
+        for i in range(len(values)):
+            values[i] = values[i].strip()
+            self.score.append(int(values[i]))
+            # TODO verify they're all numbers
 
 
     # Removes all non-spatial columns, adds a column called 'SCORE', initialized to 1
@@ -61,13 +64,11 @@ class Feature:
             arcpy.management.AddField(buf_out, 'SCORE', 'SHORT')
             cursor = arcpy.UpdateCursor(buf_out)
             for row in cursor:
-                row.setValue('SCORE', 1)
+                row.setValue('SCORE', self.score[i])
                 cursor.updateRow(row)
             del row
             del cursor
-
             self.buffer_list.append(buf_out)
-            # TODO initiate all rows of 'SCORE' to be based on score input array
         return True
 
 
@@ -77,14 +78,11 @@ class Feature:
     # OUTPUT
     #   file_out: string - Name of raster
     def buffers_to_raster(self):
-        # TODO change parameters to generate file_out based on file_in
-        # TODO Account for cell size
         for buff in self.buffer_list:
             ras_out = buff[:-4] + '.tif'
             arcpy.PolygonToRaster_conversion(buff, 'SCORE', ras_out,
                                              cell_assignment='MAXIMUM_COMBINED_AREA',
-                                             cellsize=0.001)
-            # TODO make sure cell size is fine, put it in config
+                                             cellsize=cell_size)
             self.raster_list.append(ras_out)
         return True
 
@@ -94,15 +92,10 @@ class Feature:
     #   file_out: string - file name of output, combined raster
     # OUTPUT
     #   file_out: string - Name of raster
-    def add_rasters(self, file_out):
-        # TODO check if files_in[] is empty
-        # TODO if array size is 1, return
-        # TODO change parameters to generate file_out based on city object's name
+    def add_rasters(self):
+        file_out = self.name + '.tif'
         arcpy.CheckOutExtension("spatial")
-        # output = arcpy.Raster(files_in[0])
         output = CellStatistics(self.raster_list, 'SUM', 'DATA')
-        # for raster in files_in[1:]:
-        # output = output & arcpy.Raster(raster)
         output.save(file_out)
         arcpy.CheckInExtension("spatial")
         return file_out

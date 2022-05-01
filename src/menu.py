@@ -1,3 +1,4 @@
+import arcgisscripting
 import arcpy
 from city import City
 
@@ -11,6 +12,7 @@ class Menu:
                         'View City',
                         'Edit City',
                         'Remove City']
+        self.score_raster = ""
 
     def display(self):
         print "Please select one of the following: "
@@ -39,16 +41,13 @@ class Menu:
                 print "Name already taken, please choose another."
                 continue
             name_valid = True
-
-
-        # TODO name must not be in use already
         # Waits for user to input a valid spatial reference
-        # LA = GCS_WGS_1984
+        # LA = GCS WGS 1984
         sr_valid = False
         while sr_valid is False:
             # TODO sr = raw_input("Enter in the spatial reference: ")
             sr = ("Sinusoidal (world)")
-            sr_valid = city.set_sr(sr)
+            sr_valid = city.set_spatial_reference(sr)
 
         while True:
             print "\n// ADDING NEW CITY:", city.name, "//"
@@ -61,12 +60,21 @@ class Menu:
             if option == 0:
                 # TODO clean up, delete necessary files, city.cancel() or somethin
                 pass
+
             elif option == 1:
-                # TODO feature classes should be accessed through the workspace, check to make sure they're there
-                fc = raw_input("Input the name of the feature class: ")
-                city.add_feature_class(fc)
+                fc_valid = False
+                while fc_valid is False:
+                    try:
+                        fc = raw_input("Input the name of the feature class (without extension): ")
+                        city.add_feature_class(fc)
+                    except arcgisscripting.ExecuteError:
+                        print("Feature class not found")
+                        continue
+                    fc_valid = True
 
             elif option == 2:
+                city.combine_feature_classes()
+                city.save()
                 break
 
             else:
