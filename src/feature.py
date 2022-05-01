@@ -21,7 +21,7 @@ class Feature:
                 break
             print unit, 'is not a valid unit'
 
-        values = raw_input("Please enter the distances in the form '0.25, 0.5, 1, 20'").split(',')
+        values = raw_input("Please enter the distances in the form '0.25, 0.5, 1, 2': ").split(',')
         for i in range(len(values)):
             values[i] = values[i].strip()
             # TODO verify they're all numbers
@@ -30,7 +30,7 @@ class Feature:
 
 
     def get_scores(self):
-        values = raw_input("Please enter the scores in the form '0.25, 0.5, 1, 20'").split(',')
+        values = raw_input("Please enter the scores in the form '1, 1, 1, 1': ").split(',')
         for i in range(len(values)):
             values[i] = values[i].strip()
             self.score.append(int(values[i]))
@@ -41,9 +41,11 @@ class Feature:
     # Handles any other necessary preprocessing
     # INPUT
     #   file_in: string - feature class to be cleaned & processed
-    def preprocess(self):
-        # Use self.rootFile
-        pass
+    def preprocess(self, sa):
+        arcpy.env.overwriteOutput = True
+        arcpy.management.Project(self.fileName, "proj_" + self.fileName, sa)
+        self.name = "proj_" + self.name
+        self.fileName = "proj_" + self.fileName
         # TODO make copy backup
         # TODO any preprocessing, such as checking/changing projection
 

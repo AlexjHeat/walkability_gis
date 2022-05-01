@@ -1,2 +1,2 @@
 units = ['mile', 'kilometer', 'feet', 'meter']
-cellsize=0.001
+cell_size=0.001

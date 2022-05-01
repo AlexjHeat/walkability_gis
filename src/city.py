@@ -15,9 +15,9 @@ class City:
         arcpy.env.workspace = path
 
 
-    def set_spatial_reference(self, sr):
+    def set_spatial_reference(self, coord_system):
         try:
-            arcpy.SpatialReference(sr)
+            sr = arcpy.SpatialReference(coord_system)
         except RuntimeError:
             print("Invalid spatial reference")
             return False
@@ -26,7 +26,8 @@ class City:
 
     def add_feature_class(self, name):
         fc = Feature(name)
-        fc.preprocess()
+        # TODO fix preprocessing from breaking PolygontoRaster()
+        #fc.preprocess(self.spatial_reference)
         fc.get_distances()
         fc.get_scores()
         fc.create_concentric_buffers()

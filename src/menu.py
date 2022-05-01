@@ -43,11 +43,11 @@ class Menu:
             name_valid = True
         # Waits for user to input a valid spatial reference
         # LA = GCS WGS 1984
-        sr_valid = False
-        while sr_valid is False:
+        coord_system_valid = False
+        while coord_system_valid is False:
             # TODO sr = raw_input("Enter in the spatial reference: ")
-            sr = ("Sinusoidal (world)")
-            sr_valid = city.set_spatial_reference(sr)
+            coord_system = ("Sinusoidal (world)")
+            coord_system_valid = city.set_spatial_reference(coord_system)
 
         while True:
             print "\n// ADDING NEW CITY:", city.name, "//"
@@ -62,15 +62,12 @@ class Menu:
                 pass
 
             elif option == 1:
-                fc_valid = False
-                while fc_valid is False:
-                    try:
-                        fc = raw_input("Input the name of the feature class (without extension): ")
+                while True:
+                    fc = raw_input("Input the name of the feature class (without extension): ")
+                    if arcpy.Exists(fc + '.shp'):
                         city.add_feature_class(fc)
-                    except arcgisscripting.ExecuteError:
-                        print("Feature class not found")
-                        continue
-                    fc_valid = True
+                        break
+                    print("Feature class not found")
 
             elif option == 2:
                 city.combine_feature_classes()
