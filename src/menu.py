@@ -1,6 +1,7 @@
 import arcgisscripting
 import arcpy
 from city import City
+from .config import spatial_reference
 
 
 class Menu:
@@ -45,9 +46,7 @@ class Menu:
         # LA = GCS WGS 1984
         coord_system_valid = False
         while coord_system_valid is False:
-            # TODO sr = raw_input("Enter in the spatial reference: ")
-            coord_system = ("Sinusoidal (world)")
-            coord_system_valid = city.set_spatial_reference(coord_system)
+            coord_system_valid = city.set_spatial_reference(spatial_reference)
 
         while True:
             print "\n// ADDING NEW CITY:", city.name, "//"

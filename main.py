@@ -1,22 +1,16 @@
-import arcpy
 from src.menu import Menu
 
 
-arcpy.AddMessage("Booting...")
+print("Booting...")
 
 mainMenu = Menu()
 while mainMenu.done is False:
     mainMenu.display()
     mainMenu.handle_input()
 
-arcpy.AddMessage("Exiting...")
+print("Exiting...")
 
-
-
-
-
-
-
-
-
-
+# TODO add clipping
+# TODO Figure out how to project spatial reference without breaking raster
+# TODO Build GUI
+# TODO Figure out better algorithm for computing score

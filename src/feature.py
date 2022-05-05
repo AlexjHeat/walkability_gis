@@ -1,7 +1,7 @@
 import arcpy
 import arcpy.management
 from arcpy.sa import *
-from .config import units, cell_size
+from .config import unit, cell_size
 
 
 class Feature:
@@ -15,13 +15,7 @@ class Feature:
 
 
     def get_distances(self):
-        while True:
-            unit = raw_input('Please enter a unit: ')
-            if unit in units:
-                break
-            print unit, 'is not a valid unit'
-
-        values = raw_input("Please enter the distances in the form '0.25, 0.5, 1, 2': ").split(',')
+        values = raw_input("Please enter the distances (" + unit + ") in the form '0.25, 0.5, 1, 2': ").split(',')
         for i in range(len(values)):
             values[i] = values[i].strip()
             # TODO verify they're all numbers
@@ -30,10 +24,14 @@ class Feature:
 
 
     def get_scores(self):
-        values = raw_input("Please enter the scores in the form '1, 1, 1, 1': ").split(',')
+        values = raw_input("Please enter the scores in the form '6, 4, 2, 1': ").split(',')
+        # [6, 4, 2, 1] -> [2, 2, 1, 1]
         for i in range(len(values)):
             values[i] = values[i].strip()
-            self.score.append(int(values[i]))
+            try:
+                self.score.append(int(values[i]) - int(values[i+1]))
+            except IndexError:
+                self.score.append(int(values[i]))
             # TODO verify they're all numbers
 
 

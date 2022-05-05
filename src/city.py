@@ -25,6 +25,7 @@ class City:
         return True
 
     def add_feature_class(self, name):
+        arcpy.env.extent = 'MAXOF'
         fc = Feature(name)
         # TODO fix preprocessing from breaking PolygontoRaster()
         #fc.preprocess(self.spatial_reference)
